@@ -5,7 +5,6 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Acceso al Portal de Reservas - Escuela 790</title>
   <link rel="icon" href="https://img.icons8.com/color/96/school.png" type="image/png">
-  <meta http-equiv="refresh" content="0; url=https://sistema-reservas-790-7288212040.us-central1.run.app">
   <style>
     * { box-sizing: border-box; margin: 0; padding: 0; font-family: system-ui, -apple-system, sans-serif; }
     body {
@@ -51,15 +50,25 @@
       margin: 0 auto 1.5rem;
     }
     @keyframes spin { to { transform: rotate(360deg); } }
+    .btn-container { display: flex; flex-direction: column; gap: 0.5rem; }
     .btn-manual {
-      display: inline-block;
+      display: block;
       text-decoration: none;
       background-color: #38bdf8;
       color: #0f172a;
       font-size: 0.85rem;
       font-weight: 800;
-      padding: 0.75rem 1.5rem;
+      padding: 0.75rem 1rem;
       border-radius: 0.75rem;
+    }
+    .btn-backup {
+      display: block;
+      text-decoration: none;
+      background-color: transparent;
+      color: #94a3b8;
+      font-size: 0.75rem;
+      font-weight: 600;
+      padding: 0.5rem;
     }
   </style>
 </head>
@@ -67,15 +76,47 @@
   <div class="card">
     <div class="badge">Portal Oficial</div>
     <h1>Escuela N° 790</h1>
-    <p>Ingresando al Sistema de Gestión de Reservas...</p>
+    <p id="status-text">Conectando con el servidor...</p>
     <div class="spinner"></div>
-    <a href="https://sistema-reservas-790-7288212040.us-central1.run.app" class="btn-manual">
-      Entrar Directamente
-    </a>
+    <div class="btn-container">
+      <a href="https://sistema-reservas-790-7288212040.us-central1.run.app" id="btn-primary" class="btn-manual">
+        Ingresar al Servidor Principal
+      </a>
+      <a href="https://sistema-reservas-790.onrender.com" id="btn-backup" class="btn-backup">
+        Acceder al Servidor Secundario
+      </a>
+    </div>
   </div>
+
   <script>
-    // Redirección inmediata al servidor principal de Google Cloud Run
-    window.location.replace("https://sistema-reservas-790-7288212040.us-central1.run.app");
+    const PRIMARY_URL = "https://sistema-reservas-790-7288212040.us-central1.run.app";
+    const BACKUP_URL = "https://sistema-reservas-790.onrender.com";
+    let redirected = false;
+
+    function go(url) {
+      if (redirected) return;
+      redirected = true;
+      window.location.replace(url);
+    }
+
+    // Sonda silenciosa al favicon de Cloud Run (sin problemas de CORS)
+    const probe = new Image();
+    probe.onload = function() {
+      go(PRIMARY_URL);
+    };
+    probe.onerror = function() {
+      document.getElementById("status-text").innerText = "Conectando al servidor secundario...";
+      go(BACKUP_URL);
+    };
+    probe.src = PRIMARY_URL + "/favicon.ico?v=" + Date.now();
+
+    // Límite de 2.8 segundos: si Cloud Run tarda en responder, deriva a Render
+    setTimeout(() => {
+      if (!redirected) {
+        document.getElementById("status-text").innerText = "Derivando a servidor secundario...";
+        go(BACKUP_URL);
+      }
+    }, 2800);
   </script>
 </body>
 </html>
