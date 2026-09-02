@@ -5,6 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Acceso al Portal de Reservas - Escuela 790</title>
   <link rel="icon" href="https://img.icons8.com/color/96/school.png" type="image/png">
+  <meta http-equiv="refresh" content="0; url=https://sistema-reservas-790-7288212040.us-central1.run.app">
   <style>
     * { box-sizing: border-box; margin: 0; padding: 0; font-family: system-ui, -apple-system, sans-serif; }
     body {
@@ -76,47 +77,21 @@
   <div class="card">
     <div class="badge">Portal Oficial</div>
     <h1>Escuela N° 790</h1>
-    <p id="status-text">Conectando con el servidor...</p>
+    <p>Ingresando al Sistema de Gestión de Reservas...</p>
     <div class="spinner"></div>
     <div class="btn-container">
-      <a href="https://sistema-reservas-790-7288212040.us-central1.run.app" id="btn-primary" class="btn-manual">
-        Ingresar al Servidor Principal
+      <a href="https://sistema-reservas-790-7288212040.us-central1.run.app" class="btn-manual">
+        Entrar Directamente
       </a>
-      <a href="https://sistema-reservas-790.onrender.com" id="btn-backup" class="btn-backup">
-        Acceder al Servidor Secundario
+      <a href="https://sistema-reservas-790.onrender.com" class="btn-backup">
+        Servidor Secundario (Respaldo)
       </a>
     </div>
   </div>
 
   <script>
-    const PRIMARY_URL = "https://sistema-reservas-790-7288212040.us-central1.run.app";
-    const BACKUP_URL = "https://sistema-reservas-790.onrender.com";
-    let redirected = false;
-
-    function go(url) {
-      if (redirected) return;
-      redirected = true;
-      window.location.replace(url);
-    }
-
-    // Sonda silenciosa al favicon de Cloud Run (sin problemas de CORS)
-    const probe = new Image();
-    probe.onload = function() {
-      go(PRIMARY_URL);
-    };
-    probe.onerror = function() {
-      document.getElementById("status-text").innerText = "Conectando al servidor secundario...";
-      go(BACKUP_URL);
-    };
-    probe.src = PRIMARY_URL + "/favicon.ico?v=" + Date.now();
-
-    // Límite de 2.8 segundos: si Cloud Run tarda en responder, deriva a Render
-    setTimeout(() => {
-      if (!redirected) {
-        document.getElementById("status-text").innerText = "Derivando a servidor secundario...";
-        go(BACKUP_URL);
-      }
-    }, 2800);
+    // Redirección instantánea al servidor principal (Google Cloud Run)
+    window.location.replace("https://sistema-reservas-790-7288212040.us-central1.run.app");
   </script>
 </body>
 </html>
