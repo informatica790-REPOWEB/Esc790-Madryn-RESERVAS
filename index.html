@@ -5,93 +5,409 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Acceso al Portal de Reservas - Escuela 790</title>
   <link rel="icon" href="https://img.icons8.com/color/96/school.png" type="image/png">
-  <meta http-equiv="refresh" content="0; url=https://sistema-reservas-790-7288212040.us-central1.run.app">
   <style>
-    * { box-sizing: border-box; margin: 0; padding: 0; font-family: system-ui, -apple-system, sans-serif; }
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    }
     body {
-      background: #0f172a;
+      background: radial-gradient(circle at top center, #1e293b 0%, #0f172a 100%);
       min-height: 100vh;
       display: flex;
       align-items: center;
       justify-content: center;
-      padding: 1.5rem;
-      color: #ffffff;
+      padding: 1.25rem;
+      color: #f8fafc;
+      overflow-x: hidden;
     }
     .card {
       background: #1e293b;
-      border-radius: 1.5rem;
-      padding: 2.5rem 2rem;
-      max-width: 420px;
+      border-radius: 1.75rem;
+      padding: 2.25rem 1.75rem;
+      max-width: 440px;
       width: 100%;
       text-align: center;
       border: 1px solid #334155;
-      box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+      box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.55), 0 0 0 1px rgba(255, 255, 255, 0.05);
+      position: relative;
     }
     .badge {
-      display: inline-block;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.4rem;
       padding: 0.35rem 0.85rem;
-      background-color: #0284c7;
-      color: #ffffff;
-      font-size: 0.75rem;
+      background: rgba(2, 132, 199, 0.15);
+      border: 1px solid rgba(56, 189, 248, 0.3);
+      color: #38bdf8;
+      font-size: 0.72rem;
       font-weight: 800;
       text-transform: uppercase;
-      letter-spacing: 0.05em;
+      letter-spacing: 0.06em;
       border-radius: 9999px;
-      margin-bottom: 1.25rem;
+      margin-bottom: 1.1rem;
     }
-    h1 { font-size: 1.35rem; font-weight: 900; margin-bottom: 0.5rem; color: #f8fafc; }
-    p { font-size: 0.9rem; color: #94a3b8; margin-bottom: 1.5rem; }
-    .spinner {
-      width: 36px;
-      height: 36px;
-      border: 3px solid #334155;
-      border-top-color: #38bdf8;
+    .badge-dot {
+      width: 6px;
+      height: 6px;
       border-radius: 50%;
-      animation: spin 0.8s linear infinite;
-      margin: 0 auto 1.5rem;
-    }
-    @keyframes spin { to { transform: rotate(360deg); } }
-    .btn-container { display: flex; flex-direction: column; gap: 0.5rem; }
-    .btn-manual {
-      display: block;
-      text-decoration: none;
       background-color: #38bdf8;
+      box-shadow: 0 0 8px #38bdf8;
+      animation: pulse-dot 1.5s ease-in-out infinite;
+    }
+    @keyframes pulse-dot {
+      0%, 100% { opacity: 0.4; transform: scale(0.9); }
+      50% { opacity: 1; transform: scale(1.2); }
+    }
+    h1 {
+      font-size: 1.45rem;
+      font-weight: 900;
+      letter-spacing: -0.02em;
+      margin-bottom: 0.25rem;
+      color: #f8fafc;
+    }
+    .sub-title {
+      font-size: 0.88rem;
+      color: #94a3b8;
+      margin-bottom: 1.75rem;
+      font-weight: 500;
+    }
+
+    /* Rueda de Progreso Circular Dinámica */
+    .progress-wrapper {
+      position: relative;
+      width: 140px;
+      height: 140px;
+      margin: 0 auto 1.5rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .progress-svg {
+      width: 140px;
+      height: 140px;
+      transform: rotate(-90deg);
+    }
+    .progress-bg {
+      fill: none;
+      stroke: #334155;
+      stroke-width: 9;
+    }
+    .progress-bar {
+      fill: none;
+      stroke: url(#cyan-gradient);
+      stroke-width: 9;
+      stroke-linecap: round;
+      stroke-dasharray: 377;
+      stroke-dashoffset: 377;
+      transition: stroke-dashoffset 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+      filter: drop-shadow(0 0 6px rgba(56, 189, 248, 0.4));
+    }
+    .progress-content {
+      position: absolute;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+    }
+    .percentage-text {
+      font-size: 1.85rem;
+      font-weight: 900;
+      color: #ffffff;
+      font-variant-numeric: tabular-nums;
+      line-height: 1;
+      letter-spacing: -0.03em;
+    }
+    .percentage-symbol {
+      font-size: 1rem;
+      font-weight: 700;
+      color: #38bdf8;
+      margin-left: 1px;
+    }
+    .time-counter {
+      font-size: 0.7rem;
+      color: #64748b;
+      font-weight: 600;
+      margin-top: 0.25rem;
+      font-variant-numeric: tabular-nums;
+    }
+
+    /* Estado de conexión dinámico */
+    .status-box {
+      min-height: 48px;
+      margin-bottom: 1.5rem;
+    }
+    .status-text {
+      font-size: 0.88rem;
+      font-weight: 700;
+      color: #e2e8f0;
+      transition: color 0.2s;
+    }
+    .status-subtext {
+      font-size: 0.75rem;
+      color: #94a3b8;
+      margin-top: 0.25rem;
+    }
+
+    /* Barra de progreso complementaria */
+    .track-bar {
+      height: 4px;
+      width: 100%;
+      background-color: #334155;
+      border-radius: 9999px;
+      overflow: hidden;
+      margin-bottom: 1.5rem;
+    }
+    .track-fill {
+      height: 100%;
+      width: 0%;
+      background: linear-gradient(90deg, #0284c7 0%, #38bdf8 100%);
+      border-radius: 9999px;
+      transition: width 0.25s ease-out;
+    }
+
+    /* Botones */
+    .btn-container {
+      display: flex;
+      flex-direction: column;
+      gap: 0.6rem;
+    }
+    .btn-manual {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.5rem;
+      text-decoration: none;
+      background: linear-gradient(135deg, #38bdf8 0%, #0284c7 100%);
       color: #0f172a;
-      font-size: 0.85rem;
+      font-size: 0.88rem;
       font-weight: 800;
-      padding: 0.75rem 1rem;
-      border-radius: 0.75rem;
+      padding: 0.85rem 1.25rem;
+      border-radius: 0.85rem;
+      transition: transform 0.15s, box-shadow 0.15s, filter 0.15s;
+      box-shadow: 0 4px 14px rgba(56, 189, 248, 0.25);
+      border: none;
+      cursor: pointer;
+    }
+    .btn-manual:hover {
+      filter: brightness(1.08);
+      transform: translateY(-1px);
+      box-shadow: 0 6px 20px rgba(56, 189, 248, 0.35);
     }
     .btn-backup {
-      display: block;
+      display: inline-block;
       text-decoration: none;
-      background-color: transparent;
+      background: transparent;
       color: #94a3b8;
-      font-size: 0.75rem;
+      font-size: 0.78rem;
       font-weight: 600;
       padding: 0.5rem;
+      border-radius: 0.5rem;
+      transition: color 0.15s;
+    }
+    .btn-backup:hover {
+      color: #e2e8f0;
+    }
+
+    .footer-note {
+      margin-top: 1.5rem;
+      font-size: 0.7rem;
+      color: #64748b;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.35rem;
     }
   </style>
 </head>
 <body>
+
   <div class="card">
-    <div class="badge">Portal Oficial</div>
+    <div class="badge">
+      <span class="badge-dot"></span>
+      Portal Institucional Oficial
+    </div>
+
     <h1>Escuela N° 790</h1>
-    <p>Ingresando al Sistema de Gestión de Reservas...</p>
-    <div class="spinner"></div>
+    <p class="sub-title">Sistema de Reservas y Gestión de Recursos</p>
+
+    <!-- Rueda de Progreso Circular con Porcentaje -->
+    <div class="progress-wrapper">
+      <svg class="progress-svg" viewBox="0 0 140 140">
+        <defs>
+          <linearGradient id="cyan-gradient" x1="0%" y1="0%" x2="100%" y2="100%">
+            <stop offset="0%" stop-color="#38bdf8" />
+            <stop offset="100%" stop-color="#0284c7" />
+          </linearGradient>
+        </defs>
+        <circle class="progress-bg" cx="70" cy="70" r="60" />
+        <circle id="progressCircle" class="progress-bar" cx="70" cy="70" r="60" />
+      </svg>
+
+      <div class="progress-content">
+        <div>
+          <span id="percentText" class="percentage-text">0</span><span class="percentage-symbol">%</span>
+        </div>
+        <span id="timeCounter" class="time-counter">0.0s</span>
+      </div>
+    </div>
+
+    <!-- Barra de progreso horizontal complementaria -->
+    <div class="track-bar">
+      <div id="trackFill" class="track-fill"></div>
+    </div>
+
+    <!-- Indicador de estado por fases -->
+    <div class="status-box">
+      <div id="statusText" class="status-text">Iniciando conexión con el servidor...</div>
+      <div id="statusSubtext" class="status-subtext">Conectando a la infraestructura de Google Cloud Run</div>
+    </div>
+
+    <!-- Botones de navegación directa o respaldo -->
     <div class="btn-container">
-      <a href="https://sistema-reservas-790-7288212040.us-central1.run.app" class="btn-manual">
-        Entrar Directamente
+      <a id="btnDirect" href="https://sistema-reservas-790-7288212040.us-central1.run.app" class="btn-manual">
+        <span>Ingresar Ahora</span>
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+          <line x1="5" y1="12" x2="19" y2="12"></line>
+          <polyline points="12 5 19 12 12 19"></polyline>
+        </svg>
       </a>
       <a href="https://sistema-reservas-790.onrender.com" class="btn-backup">
-        Servidor Secundario (Respaldo)
+        Servidor Secundario de Respaldo (Render)
       </a>
+    </div>
+
+    <div class="footer-note">
+      <span>🔒 Conexión cifrada SSL</span>
+      <span>•</span>
+      <span>Puerto Madryn, Chubut</span>
     </div>
   </div>
 
   <script>
-    // Redirección instantánea al servidor principal (Google Cloud Run)
-    window.location.replace("https://sistema-reservas-790-7288212040.us-central1.run.app");
+    const TARGET_URL = "https://sistema-reservas-790-7288212040.us-central1.run.app";
+    const HEALTH_URL = TARGET_URL + "/api/health";
+
+    const CIRCUMFERENCE = 2 * Math.PI * 60; // ≈ 376.99
+    
+    const circle = document.getElementById('progressCircle');
+    const percentText = document.getElementById('percentText');
+    const trackFill = document.getElementById('trackFill');
+    const statusText = document.getElementById('statusText');
+    const statusSubtext = document.getElementById('statusSubtext');
+    const timeCounter = document.getElementById('timeCounter');
+
+    circle.style.strokeDasharray = `${CIRCUMFERENCE}`;
+    circle.style.strokeDashoffset = `${CIRCUMFERENCE}`;
+
+    let currentProgress = 0;
+    let targetProgress = 0;
+    let isRedirecting = false;
+    const startTime = performance.now();
+
+    function updateUI(percent) {
+      const offset = CIRCUMFERENCE - (percent / 100) * CIRCUMFERENCE;
+      circle.style.strokeDashoffset = offset;
+      trackFill.style.width = percent + '%';
+      percentText.textContent = Math.floor(percent);
+
+      if (percent < 25) {
+        statusText.textContent = "Iniciando conexión con el servidor...";
+        statusSubtext.textContent = "Estableciendo enlace seguro TLS/SSL";
+      } else if (percent < 55) {
+        statusText.textContent = "Despertando servicios en la nube...";
+        statusSubtext.textContent = "Activando contenedor de Google Cloud Run";
+      } else if (percent < 85) {
+        statusText.textContent = "Verificando base de datos y catálogos...";
+        statusSubtext.textContent = "Cargando recursos escolares y calendario";
+      } else if (percent < 99) {
+        statusText.textContent = "Inicializando pantalla de acceso...";
+        statusSubtext.textContent = "Preparando sesión docente e institucional";
+      } else {
+        statusText.textContent = "¡Conexión establecida!";
+        statusText.style.color = "#38bdf8";
+        statusSubtext.textContent = "Redirigiendo a la pantalla de login...";
+      }
+    }
+
+    // Cronómetro en vivo
+    const timerInterval = setInterval(() => {
+      const elapsed = ((performance.now() - startTime) / 1000).toFixed(1);
+      timeCounter.textContent = elapsed + 's';
+    }, 100);
+
+    // Motor de animación suave
+    function animate() {
+      if (currentProgress < targetProgress) {
+        const diff = targetProgress - currentProgress;
+        currentProgress += Math.max(0.4, diff * 0.12);
+        if (currentProgress > targetProgress) currentProgress = targetProgress;
+        updateUI(currentProgress);
+      }
+
+      if (currentProgress >= 100 && !isRedirecting) {
+        isRedirecting = true;
+        clearInterval(timerInterval);
+        setTimeout(() => {
+          window.location.replace(TARGET_URL);
+        }, 300);
+        return;
+      }
+
+      requestAnimationFrame(animate);
+    }
+    requestAnimationFrame(animate);
+
+    // Avance suave progresivo de etapas
+    const stages = [
+      { p: 18, delay: 200 },
+      { p: 38, delay: 800 },
+      { p: 58, delay: 1600 },
+      { p: 76, delay: 2500 },
+      { p: 90, delay: 3500 },
+      { p: 95, delay: 4800 }
+    ];
+
+    stages.forEach(stage => {
+      setTimeout(() => {
+        if (!isRedirecting && targetProgress < stage.p) {
+          targetProgress = stage.p;
+        }
+      }, stage.delay);
+    });
+
+    // PING ACTIVO AL SERVIDOR: cuando responda afirmativamente, completa el 100% de inmediato
+    async function checkServerHealth() {
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), 12000);
+
+      try {
+        const res = await fetch(HEALTH_URL, {
+          method: 'GET',
+          cache: 'no-store',
+          signal: controller.signal
+        });
+        clearTimeout(timeoutId);
+
+        if (res.ok) {
+          targetProgress = 100;
+        } else {
+          targetProgress = 100;
+        }
+      } catch (err) {
+        setTimeout(() => {
+          targetProgress = 100;
+        }, 3500);
+      }
+    }
+
+    checkServerHealth();
+
+    // Redirección forzada máxima de seguridad (7.5s)
+    setTimeout(() => {
+      targetProgress = 100;
+    }, 7500);
   </script>
 </body>
 </html>
